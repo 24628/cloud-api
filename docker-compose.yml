@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  cloud:
+    container_name: cloud
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GO_VERSION: "1.20"
+        API_KEY: "Ht;2[u?P[fJoyNe1tZHZ/y?W@x.iSr\".d,uCWQBYOE6v9:v2JbDy<Y!Cc**J]rR"
+        GO_ENV: "test"
+        GO_PORT: "8081"
+        MONGO_PORT: "27017"
+        MONGO_IP: "mongo"
+        MONGO_USER: "root"
+        MONGO_PASSWORD: "secret"
+    environment:
+      MONGO_URL: "mongodb://mongo:27017/cloud_db"
+    volumes:
+      - ./cloud/app:/app
+    ports:
+      - "8081:8081"
+      - "2222:22"
+    depends_on:
+      - mongo
+
+  # Database
+  mongo:
+    image: mongo:latest
+    container_name: mongo_database_cloud
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
